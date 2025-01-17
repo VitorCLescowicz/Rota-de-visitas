@@ -1,0 +1,12 @@
+/* app/testes/page.module.css */
+.background {
+    background-image: url('/ROTEIRO/projeto/imagens/bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem;
+  }
