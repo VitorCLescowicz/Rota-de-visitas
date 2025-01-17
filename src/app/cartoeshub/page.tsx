@@ -3,60 +3,85 @@
 
 import Link from "next/link";
 import Script from "next/script";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 export default function CartoesHubPage() {
-  // Efeito para inicializar scripts após carregamento do componente
-  useEffect(() => {
-    // Verifica IE apenas no lado do cliente
-    if (typeof window !== "undefined") {
-      const isIE = navigator.userAgent.indexOf('MSIE 6') !== -1 || 
-                   navigator.userAgent.indexOf('MSIE 7') !== -1 || 
-                   navigator.userAgent.indexOf('MSIE 8') !== -1;
+  // Estado para controlar se o componente já foi montado no cliente
+  const [isMounted, setIsMounted] = useState(false);
 
+  useEffect(() => {
+    setIsMounted(true);
+
+    // Evita erros de referência ao `window` no SSR
+    if (typeof window !== "undefined") {
+      const ua = window.navigator?.userAgent || "";
+
+      const isIE6 = ua.includes("MSIE 6");
+      const isIE7 = ua.includes("MSIE 7");
+      const isIE8 = ua.includes("MSIE 8");
+      const isIE = isIE6 || isIE7 || isIE8;
+
+      // Se IE < 9, carrega scripts específicos de compatibilidade
       if (isIE) {
-        const head = document.getElementsByTagName('head')[0];
-        
-        const respondScript = document.createElement('script');
-        respondScript.src = '/sites/PTI/easy/templates/easy/assets/js/respond.min.js';
+        const head = document.getElementsByTagName("head")[0];
+
+        const respondScript = document.createElement("script");
+        respondScript.src =
+          "/sites/PTI/easy/templates/easy/assets/js/respond.min.js";
         head.appendChild(respondScript);
 
-        const selectivizrScript = document.createElement('script');
-        selectivizrScript.src = '/sites/PTI/easy/templates/easy/assets/js/selectivizr.min.js';
+        const selectivizrScript = document.createElement("script");
+        selectivizrScript.src =
+          "/sites/PTI/easy/templates/easy/assets/js/selectivizr.min.js";
         head.appendChild(selectivizrScript);
       }
     }
   }, []);
 
+  // Enquanto não estiver montado, retorna um placeholder (ou null)
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <>
-      {/* Core dependencies */}
-      <Script 
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js"
+      {/*
+        1) Carrega jQuery com `beforeInteractive` para garantir que 
+           jQuery fique disponível antes dos plugins que dependem dele.
+      */}
+      <Script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
         strategy="beforeInteractive"
-        id="jquery"
-      />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/modernizr.dev.js" 
-        strategy="beforeInteractive" 
-      />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/konami.js" 
-        strategy="beforeInteractive" 
+        onLoad={() => console.log("jQuery carregado:", window.jQuery)}
       />
 
-      {/* Estilos Inline */}
+      {/*
+        2) Carrega os scripts que precisam do jQuery, ainda "beforeInteractive",
+           pois alguns podem registrar plugins no $.fn. 
+      */}
+      <Script
+        src="/ROTEIRO/projeto/assets/js/modernizr.dev.js"
+        strategy="beforeInteractive"
+      />
+      <Script
+        src="/ROTEIRO/projeto/assets/js/konami.js"
+        strategy="beforeInteractive"
+      />
+
+      {/*
+        3) Estilos Inline.
+      */}
       <style jsx>{`
         .groundd {
-          background-image: url('/ROTEIRO/projeto/imagens/bg.png');
+          background-image: url("/ROTEIRO/projeto/imagens/bg.png");
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
-          height: 94vh;        
+          height: 94vh;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding-top: 0px; 
+          padding-top: 0px;
         }
 
         .wrapper {
@@ -109,7 +134,9 @@ export default function CartoesHubPage() {
         }
       `}</style>
 
-      {/* Conteúdo Principal */}
+      {/*
+        4) Conteúdo principal.
+      */}
       <div className="groundd">
         <div className="wrapper">
           <div className="container1">
@@ -138,187 +165,186 @@ export default function CartoesHubPage() {
         </div>
       </div>
 
-      {/* Scripts externos com ordem otimizada */}
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/bootstrap.min.js" 
+      {/*
+        5) Scripts que podem ser carregados após a interação, pois 
+           não são cruciais para o "primeiro" render.
+      */}
+      <Script
+        src="/ROTEIRO/projeto/assets/js/bootstrap.min.js"
         strategy="afterInteractive"
-        dependOn={["jquery"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/tablesaw.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/tablesaw.js"
         strategy="afterInteractive"
-        dependOn={["jquery"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/xtt-dropdown.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/xtt-dropdown.js"
         strategy="afterInteractive"
-        dependOn={["jquery"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/jquery.equalheights.min.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/jquery.equalheights.min.js"
         strategy="afterInteractive"
-        dependOn={["jquery"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/bootstrap-datepicker.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/bootstrap-datepicker.js"
         strategy="afterInteractive"
-        dependOn={["jquery", "bootstrap"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/locales/bootstrap-datepicker.pt-BR.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/locales/bootstrap-datepicker.pt-BR.js"
         strategy="afterInteractive"
-        dependOn={["jquery", "bootstrap", "datepicker"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/owl.carousel.min.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/owl.carousel.min.js"
         strategy="afterInteractive"
-        dependOn={["jquery"]} 
       />
 
       {/* DataTables e plugins */}
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/jquery.dataTables.min.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/jquery.dataTables.min.js"
         strategy="afterInteractive"
-        dependOn={["jquery"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/dataTables.fixedHeader.min.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/dataTables.fixedHeader.min.js"
         strategy="afterInteractive"
-        dependOn={["jquery", "datatables"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/dataTables.fixedColumns.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/dataTables.fixedColumns.js"
         strategy="afterInteractive"
-        dependOn={["jquery", "datatables"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/dataTables.colReorder.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/dataTables.colReorder.js"
         strategy="afterInteractive"
-        dependOn={["jquery", "datatables"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/dataTables.responsive.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/dataTables.responsive.js"
         strategy="afterInteractive"
-        dependOn={["jquery", "datatables"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/locales/datatable/pt-BR.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/locales/datatable/pt-BR.js"
         strategy="afterInteractive"
-        dependOn={["jquery", "datatables"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/weg.dataTables.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/weg.dataTables.js"
         strategy="afterInteractive"
-        dependOn={["jquery", "datatables"]} 
       />
-      <Script 
-        src="/ROTEIRO/projeto/assets/js/select-customer.js" 
+      <Script
+        src="/ROTEIRO/projeto/assets/js/select-customer.js"
         strategy="afterInteractive"
-        dependOn={["jquery"]} 
       />
 
-      {/* Script de inicialização */}
+      {/*
+        6) Script de inicialização - aqui você pode adicionar 
+           todo o seu código que depende de jQuery ou desses plugins.
+      */}
       <Script id="init-scripts" strategy="afterInteractive">
         {`
-          window.addEventListener('load', function() {
-            if (typeof jQuery !== 'undefined') {
-              $(document).ready(function() {
-                // Datepicker initialization
-                if (typeof $.fn.datepicker !== 'undefined') {
-                  $('.xtt-datepicker').datepicker({
-                    language: $('html').attr('lang') || 'en',
-                    orientation: "top left"
-                  }).after('<span class="ion-calendar form-control-feedback"></span>');
+          (function() {
+            // Garante que jQuery está disponível
+            if (typeof jQuery === 'undefined') {
+              console.warn('jQuery não foi carregado corretamente.');
+              return;
+            }
+
+            // Document ready simplificado
+            jQuery(function($) {
+              
+              // Inicializa DatePicker se existir
+              if (typeof $.fn.datepicker !== 'undefined') {
+                $('.xtt-datepicker').datepicker({
+                  language: $('html').attr('lang') || 'en',
+                  orientation: "top left"
+                }).after('<span class="ion-calendar form-control-feedback"></span>');
+              }
+
+              // Inicializa Konami se existir
+              if (typeof $.fn.konami !== 'undefined') {
+                $(window).konami({
+                  cheat: function() {
+                    $('html').toggleClass('konami');
+                  }
+                });
+              }
+
+              // Exemplo de botão toggle
+              $('.btn-toggle').click(function() {
+                $(this).find('.btn').toggleClass('active');
+                if ($(this).find('.btn-primary').length > 0) {
+                  $(this).find('.btn').toggleClass('btn-primary');
                 }
-
-                // Konami code
-                if (typeof $.fn.konami !== 'undefined') {
-                  $(window).konami({
-                    cheat: function() {
-                      $('html').toggleClass('konami');
-                    }
-                  });
+                if ($(this).find('.btn-danger').length > 0) {
+                  $(this).find('.btn').toggleClass('btn-danger');
                 }
-
-                // Toggle buttons
-                $('.btn-toggle').click(function() {
-                  $(this).find('.btn').toggleClass('active');  
-                  
-                  if ($(this).find('.btn-primary').length > 0) {
-                    $(this).find('.btn').toggleClass('btn-primary');
-                  }
-                  if ($(this).find('.btn-danger').length > 0) {
-                    $(this).find('.btn').toggleClass('btn-danger');
-                  }
-                  if ($(this).find('.btn-success').length > 0) {
-                    $(this).find('.btn').toggleClass('btn-success');
-                  }
-                  if ($(this).find('.btn-info').length > 0) {
-                    $(this).find('.btn').toggleClass('btn-info');
-                  }
-                  
-                  $(this).find('.btn').toggleClass('btn-default');
-                });
-
-                // DataTables initialization
-                if (typeof $.fn.DataTable !== 'undefined') {
-                  var $contactTable = $("#noticeBoard-search-contact table").DataTable({
-                    paging: false,
-                    "info": false,
-                    "ordering": false,
-                    "scrollY": "200px"
-                  });
-
-                  $("#noticeBoard-search-input").on('keyup', function () {
-                    $contactTable.search(this.value).draw();
-                  });
+                if ($(this).find('.btn-success').length > 0) {
+                  $(this).find('.btn').toggleClass('btn-success');
                 }
+                if ($(this).find('.btn-info').length > 0) {
+                  $(this).find('.btn').toggleClass('btn-info');
+                }
+                $(this).find('.btn').toggleClass('btn-default');
+              });
 
-                // Other functionality
-                $('[data-toggle="xtt-offcanvas"]').click(function () {
-                  $('.xtt-row-offcanvas').toggleClass('active');
+              // Exemplo de DataTable
+              if (typeof $.fn.DataTable !== 'undefined') {
+                var $contactTable = $("#noticeBoard-search-contact table").DataTable({
+                  paging: false,
+                  info: false,
+                  ordering: false,
+                  scrollY: "200px"
                 });
 
-                $(".xtt-toggle-observation").on('click', function(ev){
-                  ev.preventDefault();
-                  $(this).hide().next('textarea').removeClass('hidden');
+                $("#noticeBoard-search-input").on('keyup', function () {
+                  $contactTable.search(this.value).draw();
                 });
+              }
 
-                $('.xtt-check-cart-item').on('change',function(ev){
-                  if($(this).is(':checked')){
-                    $(this).closest('tr').addClass('active').next('tr').addClass('active');
-                  } else {
-                    $(this).closest('tr').removeClass('active').next('tr').removeClass('active');
-                  }
-                });
+              // Outras funcionalidades
+              $('[data-toggle="xtt-offcanvas"]').click(function () {
+                $('.xtt-row-offcanvas').toggleClass('active');
+              });
 
-                // Tooltips
-                $('.xtt-trigger-tooltip').hover(function(ev){
+              $(".xtt-toggle-observation").on('click', function(ev){
+                ev.preventDefault();
+                $(this).hide().next('textarea').removeClass('hidden');
+              });
+
+              $('.xtt-check-cart-item').on('change', function(ev){
+                if ($(this).is(':checked')) {
+                  $(this).closest('tr').addClass('active').next('tr').addClass('active');
+                } else {
+                  $(this).closest('tr').removeClass('active').next('tr').removeClass('active');
+                }
+              });
+
+              // Tooltips (exemplo de hover)
+              $('.xtt-trigger-tooltip').hover(
+                function(ev){
                   var $trigger = $(this);
                   var $tooltip = $trigger.find('.xtt-tooltip');
                   if($tooltip.hasClass("xtt-tooltip-fixed")){
                     var top = $trigger.offset().top + $trigger.innerHeight() + 6;
                     var left = $trigger.offset().left;
-                    $tooltip.css("top",top).css("left",left);
+                    $tooltip.css({ top: top, left: left });
                   }
                   $tooltip.show();
-                }, function(ev){
+                }, 
+                function(ev){
                   $(this).find('.xtt-tooltip').hide();
-                });
-
-                // Height fix for print
-                function bodyHeight() {
-                  var bodyHeight = $(".xtt-row-offcanvas").outerHeight();
-                  $('head').find('style').text("@media print { body { height: " + bodyHeight + "px; } }");
                 }
+              );
 
+              // Ajuste de altura para impressão (exemplo)
+              function bodyHeight() {
+                var bodyHeight = $(".xtt-row-offcanvas").outerHeight();
+                // Aqui poderia inserir alguma CSS dinâmica no <head> pra media print
+                // Exemplo: $('head').append(\`<style>@media print { body { height: \${bodyHeight}px; } }</style>\`);
+              }
+              bodyHeight();
+
+              $(window).resize(function() {
                 bodyHeight();
-                $(window).resize(function() {
-                  bodyHeight();
-                });
               });
-            }
-          });
+            });
+          })();
         `}
       </Script>
     </>
