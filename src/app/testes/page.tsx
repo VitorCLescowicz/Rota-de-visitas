@@ -26,8 +26,10 @@ export default function TestsPage() {
 
   return (
     <div className={styles.background}>
-      <div className="flex justify-center items-center w-full gap-8">
-        <div className="w-1/2 text-center">
+      <div className="flex flex-col md:flex-row justify-center items-center w-full gap-8">
+        {/* Card Teste Funcional */}
+        <div className="w-full md:w-1/2 text-center">
+          <p className="text-4xl font-semibold mb-2 text-white">Teste Funcional</p>
           <div 
             className="cursor-pointer"
             onClick={() => openVideo('/ROTEIRO/projeto/videos/LIM.mp4', 'Teste Funcional')}
@@ -43,7 +45,9 @@ export default function TestsPage() {
           </div>
         </div>
 
-        <div className="w-1/2 text-center">
+        {/* Card Teste de Carga */}
+        <div className="w-full md:w-1/2 text-center">
+          <p className="text-4xl font-semibold mb-2 text-white">Teste de Carga</p>
           <div 
             className="cursor-pointer"
             onClick={() => openVideo('/ROTEIRO/projeto/videos/TC2.mp4', 'Teste de Carga')}

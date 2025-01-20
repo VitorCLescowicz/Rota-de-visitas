@@ -34,40 +34,45 @@ export default function HomePage() {
       exit="exit"
       className="fixed inset-0 w-full h-full"
     >
-      {/* Background Container with Animation */}
+      {/* Background Container com Animação */}
       <motion.div 
-        initial={{ scale: 1.2, opacity: 0 }} // Aumentado o scale para zoom
+        initial={{ scale: 1, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
         className="absolute inset-0 w-full h-full"
         style={{
-          top: '80px',
+          top: '50px',
           backgroundImage: "url('/BemVindo.png')",
-          backgroundSize: "130%", // Aumentado para 150%
+          backgroundSize: "100%",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
       />
 
-      {/* Content Container with Staggered Animation */}
+      {/* Content Container com Animação em Cascade */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        className="absolute inset-0 flex justify-center items-center"
+        className="absolute inset-0 flex flex-col justify-center items-center"
         style={{ top: '80px' }}
       >
-        {/* Optional content */}
-        {/*
         <motion.h1 
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="text-4xl md:text-5xl lg:text-6xl text-white font-bold text-center"
+          className="text-5xl md:text-6xl lg:text-7xl text-white font-bold text-center"
         >
-          Bem-vindo!
+          BEM VINDO!
         </motion.h1>
-        */}
+        <motion.h2 
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+          className="text-xl md:text-2xl lg:text-3xl text-white font-medium text-center mt-4"
+        >
+          DEPARTAMENTO PRODUÇÃO DRIVES
+        </motion.h2>
       </motion.div>
     </motion.div>
   );

@@ -1,4 +1,5 @@
 "use client";
+// import { t } from "../utils/i18n";
 
 import Head from "next/head";
 
@@ -27,7 +28,7 @@ export default function PremiosPage() {
 
       <main>
         <h2 style={{ textAlign: "center", marginTop: "20px", fontSize: "32px" }}>
-          PRÊMIOS DEPARTAMENTO PRODUÇÃO DRIVES
+          PRÊMIOS DO DEPARTAMENTO PRODUÇÃO DRIVES
         </h2>
 
         <div className="wrapper">
